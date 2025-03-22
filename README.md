@@ -1,6 +1,8 @@
 # video-player-ng
 
-![Angular Video Player](docs/angular.gif)
+<p align="center">
+  <img src="docs/angular.gif" alt="Angular" width="50" height="50"/>
+</p>
 
 A feature-rich **Angular** video player with modern controls, including double-tap to skip/back 10s, mini player mode, and more.
 
