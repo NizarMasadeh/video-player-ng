@@ -42,7 +42,3 @@ You can modify the player controls and styles within the Angular component files
 
 Feel free to submit issues or pull requests to improve the project.
 
-## License
-
-MIT License.
-
