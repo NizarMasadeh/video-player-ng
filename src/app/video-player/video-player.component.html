@@ -3,7 +3,7 @@
     (touchstart)="onTouchStartVideoContainer($event)" (touchend)="onTouchEndVideoContainer()"
     (touchmove)="onTouchMoveVideoContainer($event)">
 
-    <video #videoElement id="video" disableRemotePlayback
+    <video #videoElement id="video" disableRemotePlayback height="100%" width="100%" preload="auto"
         src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
         (touchstart)="onVideoTouchStart($event)" (touchend)="onVideoTap($event)"
         (click)="$event.preventDefault()"></video>
@@ -70,9 +70,9 @@
                 <span class="mini-player control-btn" (click)="toggleMiniPlayer()">
                     <i class="pi" [ngClass]="isPictureInPicture ? 'pi-window-maximize' : 'pi-window-minimize'"></i>
                 </span>
-                <span class="settings control-btn"(click)="$event.stopPropagation(); handleSettingMenu()">
+                <span class="settings control-btn" (click)="$event.stopPropagation(); handleSettingMenu()">
                     <span class="setting-btn" (click)="$event.stopPropagation(); handleSettingMenu()">
-                        <i class="pi pi-cog" ></i>
+                        <i class="pi pi-cog"></i>
                     </span>
                     <ul #settingMenu class="setting-menu">
                         <li [class.speed-active]="playbackRate === 0.25"
