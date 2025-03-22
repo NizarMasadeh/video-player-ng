@@ -1,0 +1,115 @@
+<div #videoContainer class="video-container" [class.theater]="isTheater" [class.fullscreen]="isFullscreen"
+    (click)="togglePlay($event)" (mouseleave)="onMouseLeaveVideoContainer()" (mousemove)="onMouseMoveVideoContainer()"
+    (touchstart)="onTouchStartVideoContainer($event)" (touchend)="onTouchEndVideoContainer()"
+    (touchmove)="onTouchMoveVideoContainer($event)">
+
+    <video #videoElement id="video" disableRemotePlayback
+        src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+        (touchstart)="onVideoTouchStart($event)" (touchend)="onVideoTap($event)"
+        (click)="$event.preventDefault()"></video>
+
+    <div class="player-state" [class.pointer-events-none]="true">
+        <span #mainState class="main-state state-btn" [class.show-state]="!isPlaying"
+            (animationend)="onMainStateAnimationEnd()">
+            <i class="fa-solid fa-play"></i>
+        </span>
+        <span class="custom-loader" [style.display]="isLoading ? 'block' : 'none'"></span>
+    </div>
+
+    <div class="skip-indicators">
+        <div class="backward-indicator" [class.show-indicator]="showBackwardIndicator">
+            <i class="fa-solid fa-backward"></i>
+            <span>-{{skipAmount}}s</span>
+        </div>
+        <div class="forward-indicator" [class.show-indicator]="showForwardIndicator">
+            <span>+{{skipAmount}}s</span>
+            <i class="fa-solid fa-forward"></i>
+        </div>
+    </div>
+
+    <div #controls class="controls" (mouseenter)="onMouseEnterControls()" (mouseleave)="onMouseLeaveControls()">
+        <div #duration class="duration" (click)="navigate($event)" (mousedown)="onMouseDownProgress($event)"
+            (mouseenter)="onMouseEnterDuration()" (mouseleave)="onMouseLeaveDuration()">
+            <div #currentTime class="current-time relative">
+                <div class="circle-ball"></div>
+            </div>
+            <div #hoverTime class="hover-time">
+                <span #hoverDuration class="hover-duration"></span>
+            </div>
+            <div #buffer class="buffer"></div>
+        </div>
+
+        <div class="btn-controls">
+            <div class="btn-con">
+                <span class="play-pause control-btn" (click)="isPlaying ? pause() : play()">
+                    <i class="fa-solid " [ngClass]="isPlaying ? 'fa-pause' : 'fa-play'"></i>
+                </span>
+                <span class="volume">
+                    <span class="mute-unmute control-btn" (click)="toggleMuteUnmute()"
+                        (mouseenter)="onMouseEnterMuteUnmute()" (mouseleave)="onMouseLeaveMuteUnmute($event)">
+                        <i class="fa-solid" [ngClass]="muted ? 'fa-volume-xmark' : 'fa-volume-high'"></i>
+                    </span>
+                    <div #totalVol class="max-vol" [class.show]="!muted" (mousedown)="onMouseDownVol($event)">
+                        <div #currentVol class="current-vol"></div>
+                    </div>
+                </span>
+                <span class="time-container">
+                    <span class="current-duration">{{currentDurationText}}</span>
+                    <span>/</span>
+                    <span class="total-duration">{{totalDurationText}}</span>
+                </span>
+            </div>
+
+            <div class="right-controls">
+                <span class="backward control-btn" [attr.title]="skipAmount + ' backward'" (click)="handleBackward()">
+                    <i class="fa-solid fa-backward"></i>
+                </span>
+                <span class="forward control-btn" [attr.title]="skipAmount + ' forward'" (click)="handleForward()">
+                    <i class="fa-solid fa-forward"></i>
+                </span>
+                <span class="mini-player control-btn" (click)="toggleMiniPlayer()">
+                    <i class="pi" [ngClass]="isPictureInPicture ? 'pi-window-maximize' : 'pi-window-minimize'"></i>
+                </span>
+                <span class="settings control-btn"(click)="$event.stopPropagation(); handleSettingMenu()">
+                    <span class="setting-btn" (click)="$event.stopPropagation(); handleSettingMenu()">
+                        <i class="pi pi-cog" ></i>
+                    </span>
+                    <ul #settingMenu class="setting-menu">
+                        <li [class.speed-active]="playbackRate === 0.25"
+                            (click)="$event.stopPropagation(); handlePlaybackRate(0.25)" data-value="0.25">0.25x</li>
+                        <li [class.speed-active]="playbackRate === 0.5"
+                            (click)="$event.stopPropagation(); handlePlaybackRate(0.5)" data-value="0.5">0.5x</li>
+                        <li [class.speed-active]="playbackRate === 0.75"
+                            (click)="$event.stopPropagation(); handlePlaybackRate(0.75)" data-value="0.75">0.75x</li>
+                        <li [class.speed-active]="playbackRate === 1"
+                            (click)="$event.stopPropagation(); handlePlaybackRate(1)" data-value="1">1x</li>
+                        <li [class.speed-active]="playbackRate === 1.25"
+                            (click)="$event.stopPropagation(); handlePlaybackRate(1.25)" data-value="1.25">1.25x</li>
+                        <li [class.speed-active]="playbackRate === 1.5"
+                            (click)="$event.stopPropagation(); handlePlaybackRate(1.5)" data-value="1.5">1.5x</li>
+                        <li [class.speed-active]="playbackRate === 1.75"
+                            (click)="$event.stopPropagation(); handlePlaybackRate(1.75)" data-value="1.75">1.75x</li>
+                        <li [class.speed-active]="playbackRate === 2"
+                            (click)="$event.stopPropagation(); handlePlaybackRate(2)" data-value="2">2x</li>
+                    </ul>
+                </span>
+                <span class="theater-btn control-btn" (click)="toggleTheater()">
+                    <span class="theater-default" [style.display]="isTheater ? 'none' : 'flex'">
+                        <i class="pi pi-tablet"></i>
+                    </span>
+                    <span class="theater-active" [style.display]="isTheater ? 'flex' : 'none'">
+                        <i class="pi pi-desktop"></i>
+                    </span>
+                </span>
+                <span class="fullscreen-btn control-btn" title="fullscreen" (click)="toggleFullscreen()">
+                    <span class="full" [style.display]="isFullscreen ? 'none' : 'flex'">
+                        <i class="fa-solid fa-expand"></i>
+                    </span>
+                    <span class="contract" [style.display]="isFullscreen ? 'flex' : 'none'">
+                        <i class="fa-solid fa-compress"></i>
+                    </span>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
